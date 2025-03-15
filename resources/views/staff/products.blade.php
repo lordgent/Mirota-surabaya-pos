@@ -1,8 +1,6 @@
-@extends('layouts.layout')
+<x-layout>
+@section('title', 'Management Product')
 
-@section('title', 'Manajemen Produk')
-
-@section('content')
 <div class="bg-white rounded shadow p-6">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-xl font-semibold">Daftar Produk</h1>
@@ -41,4 +39,4 @@
         </table>
     </div>
 </div>
-@endsection
+</x-layout>

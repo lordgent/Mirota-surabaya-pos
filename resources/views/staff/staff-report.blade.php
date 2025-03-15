@@ -1,8 +1,6 @@
-@extends('layouts.layout')
+<x-layout>
+@section('title', 'Laporan Transaksi')
 
-@section('title', 'Laporan')
-
-@section('content')
 <div class="bg-white rounded shadow p-6">
     <h1 class="text-xl font-semibold mb-4">Laporan</h1>
 
@@ -107,4 +105,4 @@
         </div>
     @endif
 </div>
-@endsection
+</x-layout>

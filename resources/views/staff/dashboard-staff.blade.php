@@ -1,8 +1,6 @@
-@extends('layouts.layout')
+<x-layout>
+@section('title', 'Dashboard')
 
-@section('title', 'Dashboard Staff')
-
-@section('content')
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white shadow rounded-lg p-4">
             <h2 class="text-gray-600">Total Produk</h2>
@@ -49,4 +47,4 @@
             </tbody>
         </table>
     </div>
-@endsection
+</x-layout>
