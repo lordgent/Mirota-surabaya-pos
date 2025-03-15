@@ -13,7 +13,6 @@
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {{-- Loop produk --}}
             @for ($i = 1; $i <= 10; $i++)
                 <button class="bg-gray-100 p-4 rounded shadow hover:bg-blue-100">
                     <div class="font-semibold text-sm text-gray-700">Produk {{ $i }}</div>
@@ -28,8 +27,8 @@
         <h2 class="text-lg font-semibold mb-4">Keranjang</h2>
 
         <div class="flex-1 overflow-y-auto mb-4">
-            {{-- Contoh produk yang ditambahkan --}}
-            @for ($i = 1; $i <= 3; $i++)
+
+        @for ($i = 1; $i <= 3; $i++)
             <div class="flex justify-between items-center mb-3">
                 <div>
                     <div class="font-medium">Produk {{ $i }}</div>
