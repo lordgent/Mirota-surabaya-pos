@@ -15,12 +15,14 @@ class RoleMiddleware
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next, ...$roles)
     {
-        $user = Auth::user();
-
-        if (!$user || !in_array($user->role, $roles)) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        // Cek jika role user ada dalam list roles yang diberikan
+        if (!in_array(Auth::user()->role, $roles)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Access denied. Unauthorized role.'
+            ], 403); 
         }
 
         return $next($request);

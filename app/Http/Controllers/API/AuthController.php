@@ -18,19 +18,26 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
     
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
-    
+     // Cek kredensial
+     if (!Auth::attempt($request->only('email', 'password'))) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Unauthorized. Email or password is incorrect.'
+        ], 401);
+    }
         $user = Auth::user();
     
         // Generate Sanctum Token
         $token = $user->createToken('web-token')->plainTextToken;
     
         return response()->json([
-            'token' => $token,
-            'user' => $user
-        ]);
+            'status' => 'success',
+            'message' => 'Login successful.',
+            'data' => [
+                'token' => $token,
+                'user' => $user
+            ]
+        ], 200);
     }
 
     public function logout(Request $request)

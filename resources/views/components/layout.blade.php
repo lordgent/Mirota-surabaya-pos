@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>@yield('title', 'POS Dashboard')</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    @stack('scripts') <!-- Bagian ini akan menambahkan script ke dalam halaman -->
 </head>
 <body class="bg-gray-100 font-sans">
 

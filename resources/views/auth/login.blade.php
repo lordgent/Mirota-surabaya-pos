@@ -39,29 +39,35 @@
   </div>
 
   <script>
-    async function login() {
-      const email = document.getElementById('email').value
-      const password = document.getElementById('password').value
-      const errorDiv = document.getElementById('error')
+  async function login() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const errorDiv = document.getElementById('error');
 
-      try {
-        // Dapatkan CSRF cookie (wajib saat pakai Sanctum)
-        await axios.get('/sanctum/csrf-cookie')
+    try {
+      await axios.get('/sanctum/csrf-cookie');
 
-        // Kirim login request
-        const response = await axios.post('/api/signin', {
-          email,
-          password
-        })
+      const response = await axios.post('/api/signin', {
+        email,
+        password
+      });
 
-        // Redirect ke dashboard (sesuai role bisa di-handle di backend atau frontend)
-        window.location.href = '/staff/dashboard'
-      } catch (error) {
-        console.error(error)
-        errorDiv.textContent = 'Login gagal. Periksa email & password.'
-        errorDiv.classList.remove('hidden')
+      if (response.data.status === 'success') {
+        localStorage.setItem('auth_token', response.data.data.token);
+
+        localStorage.setItem('user', JSON.stringify(response.data.data.user));
+
+        window.location.href = '/staff/dashboard';
+      } else {
+        throw new Error('Login gagal');
       }
+    } catch (error) {
+      console.error(error);
+      errorDiv.textContent = 'Login gagal. Periksa email & password.';
+      errorDiv.classList.remove('hidden');
     }
-  </script>
+  }
+</script>
+
 </body>
 </html>
