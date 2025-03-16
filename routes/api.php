@@ -32,6 +32,8 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::post('/category', [CategoryController::class, 'store']);
     Route::post('/product', [ProductController::class, 'store']);
     Route::get('/admin/products', [ProductController::class, 'index']);
+
+
 });
 
 // service API hanya bisa di akses oleh role manager atau admin
@@ -45,4 +47,8 @@ Route::middleware(['auth:sanctum', 'role:staff'])->group(function () {
     Route::get('/products', [ProductController::class, 'index']);
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::post('/transaction', [TransactionController::class, 'createTransactionUser']);
+    Route::get('/recommendation', [TransactionController::class, 'aprioriRecommendation']);
+    Route::get('/transactions', [TransactionController::class, 'getTransactionList']);
+
+    
 });
