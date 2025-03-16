@@ -37,16 +37,8 @@
                         <th class="px-4 py-2 border">status</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @for($i = 1; $i <= 5; $i++)
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-2 border">{{ $i }}</td>
-                        <td class="px-4 py-2 border">TX-HARIINI-00{{ $i }}</td>
-                        <td class="px-4 py-2 border">Rp{{ number_format(10000 * $i) }}</td>
-                        <td class="px-4 py-2 border">{{ now()->format('H:i:s') }}</td>
-                        <td class="px-4 py-2 border">Kasir {{ $i }}</td>
-                    </tr>
-                    @endfor
+                <tbody id="transaction-list-now">
+  
                 </tbody>
             </table>
         </div>
@@ -107,6 +99,14 @@
 
 @push('scripts')
 <script>
+
+function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         const currentUrl = new URL(window.location.href);
        
@@ -114,11 +114,15 @@
             fetchAprioriData();
         }
 
+        if (currentUrl.searchParams.get("tab") === "hariini") {
+            fetchTransactionsNow();
+        }
+
         const filterButton = document.getElementById('filter-btn');
         filterButton.addEventListener('click', function () {
             fetchTransactions();
         });
-
+        
     });
 function fetchAprioriData() {
     const token = localStorage.getItem("auth_token");
@@ -170,7 +174,7 @@ fetch("/api/recommendation", {
 });
 
     }
-
+// semua transaksi by filter 
 function fetchTransactions() {
     const token = localStorage.getItem('auth_token');
     const startDate = document.getElementById('start_date').value;
@@ -192,7 +196,6 @@ function fetchTransactions() {
         end_date: endDate
     });
 
-    // Fetch data from API with the query parameters
     fetch(`/api/transactions?${queryParams.toString()}`, {
         method: 'GET',
         headers: {
@@ -213,15 +216,12 @@ function fetchTransactions() {
             return;
         }
 
-        // Clear any previous rows
         transactionList.innerHTML = '';
 
-        // Loop through the response data and create table rows
         data.data.forEach((transaction, index) => {
             const row = document.createElement('tr');
             row.classList.add('hover:bg-gray-50');
             
-            // Render each field dynamically
             row.innerHTML = `
                 <td class="px-4 py-2 border">${index + 1}</td>
                 <td class="px-4 py-2 border">${transaction.created_at}</td>
@@ -231,7 +231,6 @@ function fetchTransactions() {
                 <td class="px-4 py-2 border">${transaction.status}</td>
             `;
 
-            // Append the row to the table body
             transactionList.appendChild(row);
         });
     })
@@ -242,7 +241,56 @@ function fetchTransactions() {
 }
 
 
+// semua transaksi hari ini
+async function fetchTransactionsNow() {
 
+        const now = new Date();
+        const startDate = formatDate(now);  
+        const endDate = formatDate(now); 
+        const token = localStorage.getItem('auth_token'); 
+
+        if (!token) {
+            console.error("Token tidak ditemukan di localStorage");
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/transactions?start_date=${startDate}&end_date=${endDate}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`, 
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Gagal memuat transaksi');
+            }
+
+            const data = await response.json();
+            displayTransactions(data.data);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+
+    function displayTransactions(transactions) {
+        const transactionList = document.getElementById('transaction-list-now');
+        transactionList.innerHTML = '';
+
+        transactions.forEach(transaction => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="px-4 py-2">${transaction.created_at}</td>
+                <td class="px-4 py-2">${transaction.customer_name}</td>
+                <td class="px-4 py-2">${transaction.transaction_code}</td>
+                <td class="px-4 py-2">Rp${parseFloat(transaction.amount).toLocaleString()}</td>
+                <td class="px-4 py-2 ${transaction.status === 'completed' ? 'text-green-500' : 'text-yellow-500'}">${transaction.status}</td>
+            `;
+            transactionList.appendChild(row);
+        });
+    }
 
 </script>
 @endpush

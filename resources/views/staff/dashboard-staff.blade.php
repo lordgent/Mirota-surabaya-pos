@@ -51,9 +51,9 @@ function formatDateNew(dateString) {
         const date = new Date(dateString);  // Mengubah string tanggal menjadi objek Date
         const day = String(date.getDate()).padStart(2, '0');  // Mendapatkan hari dan format 2 digit
         const month = months[date.getMonth()];  // Mendapatkan nama bulan
-        const year = date.getFullYear();  // Mendapatkan tahun
+        const year = date.getFullYear(); 
 
-        return `${day} ${month} ${year}`;  // Format tanggal menjadi DD MMMM YYYY
+        return `${day} ${month} ${year}`;
     }
     function formatDate(date) {
         const year = date.getFullYear();
@@ -101,7 +101,7 @@ function formatDateNew(dateString) {
         transactions.forEach(transaction => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td class="px-4 py-2">${formatDateNew(transaction.created_at)}</td>
+                <td class="px-4 py-2">${transaction.created_at}</td>
                 <td class="px-4 py-2">${transaction.customer_name}</td>
                 <td class="px-4 py-2">${transaction.transaction_code}</td>
                 <td class="px-4 py-2">Rp${parseFloat(transaction.amount).toLocaleString()}</td>
