@@ -30,10 +30,10 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-gray-100 text-gray-700">
-                        <th class="px-4 py-2 border">#</th>
-                        <th class="px-4 py-2 border">ID Transaksi</th>
+                        <th class="px-4 py-2 border">Tanggal</th>
+                        <th class="px-4 py-2 border">Nama Pelanggan</th>
+                        <th class="px-4 py-2 border">Kode</th>
                         <th class="px-4 py-2 border">Total</th>
-                        <th class="px-4 py-2 border">Waktu</th>
                         <th class="px-4 py-2 border">status</th>
                     </tr>
                 </thead>
@@ -59,12 +59,11 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-gray-100 text-gray-700">
-                        <th class="px-4 py-2 border">#</th>
-                        <th class="px-4 py-2 border">Tanggal</th>
-                        <th class="px-4 py-2 border">ID Transaksi</th>
-                        <th class="px-4 py-2 border">Total Item</th>
-                        <th class="px-4 py-2 border">Total Harga</th>
-                        <th class="px-4 py-2 border">Status</th>
+                    <th class="px-4 py-2 border">Tanggal</th>
+                        <th class="px-4 py-2 border">Nama Pelanggan</th>
+                        <th class="px-4 py-2 border">Kode</th>
+                        <th class="px-4 py-2 border">Total</th>
+                        <th class="px-4 py-2 border">status</th>
                     </tr>
                 </thead>
                 <tbody id="transaction-list">
@@ -99,13 +98,6 @@
 
 @push('scripts')
 <script>
-
-function formatDate(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
 
     document.addEventListener("DOMContentLoaded", function () {
         const currentUrl = new URL(window.location.href);
@@ -223,12 +215,11 @@ function fetchTransactions() {
             row.classList.add('hover:bg-gray-50');
             
             row.innerHTML = `
-                <td class="px-4 py-2 border">${index + 1}</td>
-                <td class="px-4 py-2 border">${transaction.created_at}</td>
-                <td class="px-4 py-2 border">${transaction.transaction_code}</td>
-                <td class="px-4 py-2 border">${transaction.customer_name}</td>
-                <td class="px-4 py-2 border">Rp${parseFloat(transaction.amount).toLocaleString()}</td>
-                <td class="px-4 py-2 border">${transaction.status}</td>
+                    <td class="px-4 py-2">${formatDateNew(transaction.created_at)}</td>
+                <td class="px-4 py-2">${transaction.customer_name}</td>
+                <td class="px-4 py-2">${transaction.transaction_code}</td>
+                <td class="px-4 py-2">Rp${parseFloat(transaction.amount).toLocaleString()}</td>
+                <td class="px-4 py-2 ${transaction.status === 'completed' ? 'text-green-500' : 'text-yellow-500'}">${transaction.status}</td>
             `;
 
             transactionList.appendChild(row);
@@ -282,7 +273,7 @@ async function fetchTransactionsNow() {
         transactions.forEach(transaction => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td class="px-4 py-2">${transaction.created_at}</td>
+                <td class="px-4 py-2">${formatDateNew(transaction.created_at)}</td>
                 <td class="px-4 py-2">${transaction.customer_name}</td>
                 <td class="px-4 py-2">${transaction.transaction_code}</td>
                 <td class="px-4 py-2">Rp${parseFloat(transaction.amount).toLocaleString()}</td>

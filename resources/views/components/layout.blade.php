@@ -24,5 +24,6 @@
     </div>
 </div>
 
+<script src="/js/helpers.js"></script>
 </body>
 </html>
