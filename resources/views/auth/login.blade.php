@@ -52,15 +52,20 @@
         password
       });
 
-      if (response.data.status === 'success') {
-        localStorage.setItem('auth_token', response.data.data.token);
+      const user = response.data.data.user;
+      const token = response.data.data.token;
 
-        localStorage.setItem('user', JSON.stringify(response.data.data.user));
+      localStorage.setItem('auth_token', token);
+      localStorage.setItem('user', JSON.stringify(user));
 
+    if (user.role === 'admin') {
+        window.location.href = '/admin/products';
+    } else if(user.role === 'staff') {
         window.location.href = '/staff/dashboard';
-      } else {
-        throw new Error('Login gagal');
-      }
+    }else if(user.role === 'manager'){
+      window.location.href = '/manager/dashboard';
+    }
+    
     } catch (error) {
       console.error(error);
       errorDiv.textContent = 'Login gagal. Periksa email & password.';

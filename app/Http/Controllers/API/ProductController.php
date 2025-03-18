@@ -11,18 +11,25 @@ class ProductController extends Controller
 
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::all();
-
+        $search = $request->query('search');
+        $perPage = $request->query('per_page', 10);
+    
+        $query = Product::with('category');    
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+    
+        $products = $query->paginate($perPage);
+    
         return response()->json([
             'status' => 'success',
             'message' => 'get produk berhasil',
             'data' => $products
         ], 200);
     }
-
-
+    
     public function store(Request $request)
 
     {

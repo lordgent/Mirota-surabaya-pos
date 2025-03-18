@@ -58,3 +58,12 @@ Route::get('/staff/products', function () {
 Route::get('/staff/reports', function () {
     return view('staff.staff-report');
 })->name('staff.staff-report');
+
+
+Route::get('/admin/products', function () {
+    return view('admin.admin-products');
+})->name('admin.admin-products');
+
+Route::get('/admin/product/add', function () {
+    return view('admin.admin-product-add');
+})->name('admin.admin-product-add');
