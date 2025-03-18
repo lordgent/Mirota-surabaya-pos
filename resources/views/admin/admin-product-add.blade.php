@@ -89,7 +89,7 @@
                     console.error('Error:', error);
                     alert('Terjadi kesalahan saat menyimpan produk.');
                 } finally {
-                if (loading) loading.classList.add('hidden'); // sembunyikan loading
+                if (loading) loading.classList.add('hidden');
             }
             });
         }
