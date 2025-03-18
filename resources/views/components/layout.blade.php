@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>@yield('title', 'POS Dashboard')</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    @stack('scripts') <!-- Bagian ini akan menambahkan script ke dalam halaman -->
 </head>
 <body class="bg-gray-100 font-sans">
 
@@ -24,6 +23,7 @@
     </div>
 </div>
 
-<script src="/js/helpers.js"></script>
+<script src="{{ asset('js/helpers.js') }}"></script>
+@stack('scripts') 
 </body>
 </html>

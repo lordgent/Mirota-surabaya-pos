@@ -16,35 +16,47 @@ class TransactionController extends Controller
 
 
     public function getTransactionList(Request $request)
-    {
-        // Validasi input tanggal
-        $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-        ]);
-    
-        // Ambil parameter start_date dan end_date
-        $startDate = $request->start_date;
-        $endDate = $request->end_date;
-    
-        try {
-            // Query transaksi dengan filter berdasarkan rentang tanggal
-            $transactions = Transaction::whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
-                                        ->orderBy('created_at', 'desc')
-                                        ->get();
-    
-            return response()->json([
-                'message' => 'Transactions retrieved successfully',
-                'data' => $transactions,
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Failed to retrieve transactions',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+{
+    // Validasi input tanggal
+    $request->validate([
+        'start_date' => 'required|date',
+        'end_date' => 'required|date|after_or_equal:start_date',
+    ]);
+
+    // Ambil parameter start_date dan end_date
+    $startDate = $request->start_date;
+    $endDate = $request->end_date;
+
+    // Ambil jumlah item per halaman (opsional, default 10)
+    $perPage = $request->input('per_page', 10);
+
+    try {
+        // Query transaksi dengan filter dan pagination
+        $transactions = Transaction::whereBetween('created_at', [
+                                        $startDate . ' 00:00:00',
+                                        $endDate . ' 23:59:59'
+                                    ])
+                                    ->orderBy('created_at', 'desc')
+                                    ->paginate($perPage);
+
+        return response()->json([
+            'message' => 'Transactions retrieved successfully',
+            'data' => $transactions->items(),
+            'meta' => [
+                'current_page' => $transactions->currentPage(),
+                'last_page' => $transactions->lastPage(),
+                'per_page' => $transactions->perPage(),
+                'total' => $transactions->total(),
+            ],
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Failed to retrieve transactions',
+            'error' => $e->getMessage(),
+        ], 500);
     }
-    
+}
+
 
     public function createTransactionUser(Request $request)
     {

@@ -5,19 +5,19 @@
     <!-- Dashboard Info Cards -->
     <div class="bg-white shadow rounded-lg p-4">
         <h2 class="text-gray-600">Total Produk</h2>
-        <p class="text-2xl font-bold text-blue-600">150</p>
+        <p class="text-2xl font-bold text-blue-600" id="total-products">...</p>
     </div>
     <div class="bg-white shadow rounded-lg p-4">
         <h2 class="text-gray-600">Total Transaksi</h2>
-        <p class="text-2xl font-bold text-green-600">420</p>
+        <p class="text-2xl font-bold text-green-600" id="total-transactions">...</p>
     </div>
     <div class="bg-white shadow rounded-lg p-4">
         <h2 class="text-gray-600">Pendapatan Hari Ini</h2>
-        <p class="text-2xl font-bold text-yellow-600">Rp1.250.000</p>
+        <p class="text-2xl font-bold text-yellow-600" id="today-income">...</p>
     </div>
     <div class="bg-white shadow rounded-lg p-4">
         <h2 class="text-gray-600">Stok Habis</h2>
-        <p class="text-2xl font-bold text-red-600">8</p>
+        <p class="text-2xl font-bold text-red-600" id="out-of-stock">...</p>
     </div>
 </div>
 
@@ -37,26 +37,25 @@
             <!-- Transaksi akan ditambahkan melalui JavaScript -->
         </tbody>
     </table>
+    <div id="pagination" class="mt-4 flex justify-center items-center gap-2">
+
+    </div>
 </div>
 
 @push('scripts')
 <script>
+    let currentPage = 1;
+    const perPage = 5;
+            
+    const today = formatDate(new Date());
 
-
-    async function fetchTransactions() {
+    async function fetchTransactions(page = 1) {
         const token = localStorage.getItem('auth_token'); 
+        if (!token) return console.error("Token tidak ditemukan di localStorage");
 
-        if (!token) {
-            console.error("Token tidak ditemukan di localStorage");
-            return;
-        }
-
-        const now = new Date();
-        const startDate = formatDate(now);  
-        const endDate = formatDate(now); 
 
         try {
-            const response = await fetch(`/api/transactions?start_date=${startDate}&end_date=${endDate}`, {
+            const response = await fetch(`/api/transactions?start_date=${today}&end_date=${today}&page=${page}&per_page=${perPage}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`, 
@@ -64,12 +63,11 @@
                 },
             });
 
-            if (!response.ok) {
-                throw new Error('Gagal memuat transaksi');
-            }
+            if (!response.ok) throw new Error('Gagal memuat transaksi');
 
-            const data = await response.json();
-            displayTransactions(data.data);
+            const result = await response.json();
+            displayTransactions(result.data);
+            renderPagination(result.meta);
         } catch (error) {
             console.error(error);
         }
@@ -92,8 +90,26 @@
         });
     }
 
-    // Memanggil fungsi fetchTransactions dengan tanggal sekarang
-    fetchTransactions();  // Mengambil transaksi hari ini berdasarkan tanggal sekarang
+    function renderPagination(meta) {
+        const paginationContainer = document.getElementById('pagination');
+        paginationContainer.innerHTML = '';
+
+        for (let i = 1; i <= meta.last_page; i++) {
+            const btn = document.createElement('button');
+            btn.textContent = i;
+            btn.className = `px-3 py-1 border rounded ${i === meta.current_page ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'}`;
+            btn.onclick = () => {
+                currentPage = i;
+                fetchTransactions(i);
+            };
+            paginationContainer.appendChild(btn);
+        }
+    }
+
+    fetchTransactions(currentPage);
+
+
 </script>
 @endpush
+
 </x-layout>

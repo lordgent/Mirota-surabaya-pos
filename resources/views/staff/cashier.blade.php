@@ -12,6 +12,8 @@
             <div id="product-list" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 <!-- Produk akan dimuat di sini -->
             </div>
+            <div class="mt-4 flex justify-center" id="pagination-controls"></div>
+
         </div>
 
         <!-- Transaksi -->
@@ -59,43 +61,61 @@
             const token = localStorage.getItem('auth_token');
 
             // Memuat produk dari API
-            async function loadProducts() {
-                try {
-                    const response = await fetch('/api/products', {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Accept': 'application/json',
-                        }
-                    });
-
-                    const data = await response.json();
-                    if (data.status === 'success') {
-                        const products = data.data;
-                        const productList = document.getElementById('product-list');
-                        productList.innerHTML = ''; // Kosongkan produk sebelumnya
-
-                        products.forEach((product, index) => {
-                            const productButton = document.createElement('button');
-                            productButton.classList.add('bg-gray-100', 'p-4', 'rounded', 'shadow', 'hover:bg-blue-100', 'product-item');
-                            productButton.dataset.productId = product.id;
-                            productButton.innerHTML = `
-                                    <img src="{{ asset('storage/') }}/${product.photo}" alt="${product.name}" class="w-full h-24 object-cover rounded mb-2">
-                                    <div class="font-semibold text-sm text-gray-700">${product.name}</div>
-                                    <div class="text-blue-600 font-bold text-lg mt-1">Rp${parseFloat(product.price).toLocaleString()}</div>
-                                `;
-                            productButton.onclick = function () {
-                                addToCart(product);
-                            };
-                            productList.appendChild(productButton);
-                        });
-                    } else {
-                        console.error('Gagal mengambil produk:', data.message);
-                    }
-                } catch (error) {
-                    console.error('Terjadi kesalahan saat mengambil data produk:', error);
-                }
+            async function loadProducts(page = 1, search = '') {
+    try {
+        const response = await fetch(`/api/products?page=${page}&per_page=10&search=${search}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json',
             }
+        });
+
+        const data = await response.json();
+        if (data.status === 'success') {
+            const products = data.data.data; // karena pakai paginate
+            const productList = document.getElementById('product-list');
+            productList.innerHTML = ''; // Kosongkan produk sebelumnya
+
+            products.forEach(product => {
+                const productButton = document.createElement('button');
+                productButton.classList.add('bg-gray-100', 'p-4', 'rounded', 'shadow', 'hover:bg-blue-100', 'product-item');
+                productButton.dataset.productId = product.id;
+                productButton.innerHTML = `
+                    <img src="{{ asset('storage/') }}/${product.photo}" alt="${product.name}" class="w-full h-24 object-cover rounded mb-2" onerror="this.onerror=null;this.src='/images/image-error.jpg';"/>
+                    <div class="font-semibold text-sm text-gray-700">${product.name}</div>
+                    <div class="text-blue-600 font-bold text-lg mt-1">Rp${parseFloat(product.price).toLocaleString()}</div>
+                `;
+                productButton.onclick = function () {
+                    addToCart(product);
+                };
+                productList.appendChild(productButton);
+            });
+
+            // Buat tombol pagination
+            renderPagination(data.data);
+        } else {
+            console.error('Gagal mengambil produk:', data.message);
+        }
+    } catch (error) {
+        console.error('Terjadi kesalahan saat mengambil data produk:', error);
+    }
+}
+
+function renderPagination(pagination) {
+    const container = document.getElementById('pagination-controls');
+    container.innerHTML = '';
+
+    const { current_page, last_page } = pagination;
+
+    for (let i = 1; i <= last_page; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.className = `mx-1 px-3 py-1 rounded ${i === current_page ? 'bg-blue-600 text-white' : 'bg-gray-200'}`;
+        btn.onclick = () => loadProducts(i);
+        container.appendChild(btn);
+    }
+}
 
             // Keranjang Produk
             let cart = [];

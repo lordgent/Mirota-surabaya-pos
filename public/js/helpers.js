@@ -12,9 +12,18 @@ function formatDateNew(dateString) {
     return `${day} ${month} ${year}`;  
 }
 
-function formatDate(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
+
+const formatDate = (date) => {
+    const localDate = new Date(date);
+    localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset()); 
+    return localDate.toISOString().split('T')[0]; 
+};
+
+const formatDateLocal = (date) => {
+  const localDate = new Date(date);
+  return localDate.toLocaleDateString('id-ID', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).split('/').reverse().join('-'); 
+};
