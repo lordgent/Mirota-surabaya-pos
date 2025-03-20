@@ -37,9 +37,7 @@
                 <label for="payment-method" class="block text-sm font-medium text-gray-700">Metode Pembayaran</label>
                 <select id="payment-method" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring">
                     <option value="cash">Tunai</option>
-                    <option value="bank_transfer">Transfer Bank</option>
-                    <option value="credit_card">Kartu Kredit</option>
-                    <option value="e_wallet">E-Wallet</option>
+                    <option value="QRIS">QRIS</option>
                 </select>
             </div>
 

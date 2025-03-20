@@ -24,7 +24,7 @@ class CreateTransactionsTable extends Migration
             $table->unsignedBigInteger('cashier');
             $table->foreign('cashier')->references('id')->on('users')->onDelete('cascade');
 
-            $table->enum('payment_method', ['bank_transfer', 'credit_card', 'cash','e_wallet'])->default('cash'); 
+            $table->enum('payment_method', ['cash','QRIS'])->default('cash'); 
             $table->enum('status', ['pending', 'completed', 'canceled','refund'])->default('pending'); 
 
             $table->timestamps();
